@@ -25,7 +25,7 @@ cd ~/backup/ && tar -cvpJf a2files.tar.xz ~/backup/a2files/ &>>~/backup.log
 rm -R ~/backup/a2files/ &>>~/backup.log
 
 echo "[cp] Backuping /etc"
-cp /etc/* ~/backup/etc  &>>~/backup.log
+cp -R /etc/* ~/backup/etc  &>>~/backup.log
 
 echo "[tar] Compressing /etc"
 cd ~/backup/ && tar -cvpJf etc.tar.xz ~/backup/etc/ &>>~/backup.log
