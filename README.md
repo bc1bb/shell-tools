@@ -22,10 +22,20 @@ End of Backup
 
 ## ssl.sh
 ```
+What do you want to do ?
+
+renew - To renew SSL certificates
+create - To create SSL certificates
+
+create
 What is the domain ?
-nextcloud.jusdepatate.fr
+jusdepatate.fr
+Does it have an alias ? (y/n)
+y
+What is it ?
+www.jusdepatate.fr
 What is the webroot ? (/var/www/...)
-/var/www/nextcloud
+/var/www/jusdepatate
 [sudo] password for jusdepatate:
 Saving debug log to /var/log/letsencrypt/letsencrypt.log
 Plugins selected: Authenticator webroot, Installer None
