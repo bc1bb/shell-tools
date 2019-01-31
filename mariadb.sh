@@ -23,14 +23,14 @@ if [ "$whattodo" = "createuser" ]; then
     printf "What is the password of the user ? " && read password
     printf "Do you want a db with the user ? (y/n) " && read yndb
     if [ "$yndb" = "y" ]; then mysql -e "CREATE USER $username@'localhost' IDENTIFIED BY '$password'; CREATE DATABASE IF NOT EXISTS $username; GRANT ALL PRIVILEGES ON $username.* TO $username@'localhost';"
-    else mysql -e "CREATE USER '$username'@'localhost' IDENTIFIED BY '$password';"; fi
+    else mysql -e "CREATE USER $username@'localhost' IDENTIFIED BY $password;"; fi
 elif [ "$whattodo" = "createroot" ]; then
     printf "What is the name of the root-like user ? " && read username
     printf "What is the password of the user ? " && read password
-    mysql -e "CREATE USER '$username'@'localhost' IDENTIFIED BY '$password';GRANT ALL PRIVILEGES ON  *.* to '$username'@'localhost' WITH GRANT OPTION;"
+    mysql -e "CREATE USER $username@'localhost' IDENTIFIED BY $password;GRANT ALL PRIVILEGES ON  *.* to $username@'localhost' WITH GRANT OPTION;"
 elif [ "$whattodo" = "deleteuser" ]; then
     printf "What is the name of the user to be deleted ? " && read username
-    mysql -e "DROP USER IF EXISTS $username "
+    mysql -e "DROP USER IF EXISTS $username;"
 elif [ "$whattodo" = "listuser" ]; then
     mysql -e "SELECT User FROM mysql.user;"
 elif [ "$whattodo" = "createdb" ]; then
