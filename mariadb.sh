@@ -30,7 +30,7 @@ elif [ "$whattodo" = "createroot" ]; then
     mysql -e "CREATE USER $username@'localhost' IDENTIFIED BY '$password';GRANT ALL PRIVILEGES ON  *.* to $username@'localhost' WITH GRANT OPTION;FLUSH PRIVILEGES;"
 elif [ "$whattodo" = "deleteuser" ]; then
     printf "What is the name of the user to be deleted ? " && read username
-    mysql -e "DROP USER IF EXISTS $username;"
+    mysql -e "REVOKE ALL PRIVILEGES, GRANT OPTION FROM $username@'localhost';DROP USER IF EXISTS $username;"
 elif [ "$whattodo" = "listuser" ]; then
     mysql -e "SELECT User FROM mysql.user;"
 elif [ "$whattodo" = "createdb" ]; then
