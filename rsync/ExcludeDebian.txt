@@ -1,0 +1,7 @@
+*/armel
+*/mips
+*/mips64el
+*/mipsel
+*/ppc64el
+*/s390
+*/s390x
