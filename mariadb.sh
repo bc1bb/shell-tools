@@ -5,17 +5,24 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
-echo "createuser - Create a user with(out) a db"
-echo "createroot - Create a root-like user"
-echo "deleteuser - Delete user"
-echo "listuser - List all users"
-echo "createdb - Create a db"
-echo "deletedb - Delete a db"
-echo "listdb - List all db"
-echo ""
+if [ "$1" = "" ]; then
+    # in case of no argument
+    echo "createuser - Create a user with(out) a db"
+    echo "createroot - Create a root-like user"
+    echo "deleteuser - Delete user"
+    echo "listuser - List all users"
+    echo "createdb - Create a db"
+    echo "deletedb - Delete a db"
+    echo "listdb - List all db"
+    echo ""
 
-printf "\033[1mWhat do you want to do ?\033[0m " && read whattodo
-echo ""
+    printf "\033[1mWhat do you want to do ?\033[0m " && read whattodo
+    echo ""
+
+else
+    # in case of argument
+    whattodo="$1"
+fi
 
 if [ "$whattodo" = "createuser" ]; then
     printf "What is the name of the user ? " && read username
