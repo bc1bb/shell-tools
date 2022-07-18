@@ -1,45 +1,42 @@
-echo "[START] Backup started on $(date)" > backup.log
-echo "Starting backup"
+#!/usr/bin/env bash
+# simple backup script (github:jusdepatate/shell-tools)
+# Made for an Arch Linux server environment
 
-if [ ! "$(whoami)" = "root" ]; then
- echo "[ERROR] Execute as Super User"
- echo "[END] Backup failed on $(date)" >> backup.log
- exit 1
+if [ "$EUID" -ne 0 ]; then
+  echo "[ERROR] Execute as Super User"
+  exit 1
 fi
 
-echo "[mkdir] Creating required folders"
-mkdir ~/backup 2>>~/backup.log
-mkdir ~/backup/{a2files,apt,etc,minecraft} 2>>~/backup.log
+cd ~
 
-echo "[cp] Backuping Apache2 files"
-cp -R /var/www/* ~/backup/a2files 2>>~/backup.log
+echo "Starting backup..."
+echo "[START] Backup started on $(date -u)" > backup.log
 
-echo "[cp] Backuping /etc"
-cp -R /etc/* ~/backup/etc  2>>~/backup.log
+echo "[mkdir] Creating required folders ('$(date -u)')" | tee -a ~/backup.log
+mkdir backup 2>>backup.log
+mkdir backup/pacman 2>>backup.log
 
-echo "[apt] Backuping software installed thru APT"
-apt list 2>>~/backup.log | grep "installed" > ~/backup/apt/installed
+echo "[cp] Backing up /srv ('$(date -u)')" | tee -a backup.log
+cp -R /srv backup/ 2>>backup.log
 
-#echo "[cp] Backuping TeamSpeak3 files"
-#cp -R ~teamspeak/* ~/backup/ts/ 2>>~/backup.log
+echo "[cp] Backing up /etc ('$(date -u)')" | tee -a backup.log
+cp -R /etc backup/ 2>>backup.log
 
-echo "[mysqldump] Backuping MySQL databases"
-su backup -c "mysqldump -A -Y -C -f -u backup" > ~/backup/mariadb.sql 2>>~/backup.log
+echo "[pacman] Backing up software installed thru Pacman ('$(date -u)')" | tee -a backup.log
+pacman -Q 2>>backup.log > backup/apt/installed
 
-#echo "[cp] Backuping MC"
-#cp -R ~root/minecraft/* ~/backup/minecraft/ 2>>~/backup.log
+echo "[mysqldump] Backing up MySQL databases ('$(date -u)')" | tee -a backup.log
+su backup -c "mysqldump -A -Y -C -f -u root" > backup/mariadb.sql 2>>backup.log
 
-echo "[tar] Compressing backup"
-cd ~ && sudo tar -cvpJf backup.tar.xz ~/backup 2>>~/backup.log
-rm -r ~/backup &>>~/backup.log
-
-#echo "[mv] Putting backup on Nextcloud"
-#rm /var/www/nextcloud/data/jusdepatate/files/backup.tar.xz
-#mv ~/backup.tar.xz /var/www/nextcloud/data/jusdepatate/files/backup.tar.xz
+echo "[tar] Compressing backup ('$(date -u)')" | tee -a backup.log
+tar -cvpJf backup.tar.xz backup 2>>backup.log
+rm -r ~/backup &>>backup.log
 
 echo "[info] Backup log in file ~/backup.log"
 echo "[info] Backup is in file backup.tar.xz"
-echo "End of Backup"
+echo "Ending Backup..."
 
-echo "[END] Backup ended on $(date)" >> ~/backup.log
+echo "[END] Backup ended on $(date -u)" >> ~/backup.log
+
+cd - &>/etc/null
 exit 0

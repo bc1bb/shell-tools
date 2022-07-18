@@ -1,4 +1,13 @@
 #!/usr/bin/env bash
+# MariaHelper (github:jusdepatate/shell-tools)
+# Script that can be used to create/delete user/databases,
+# Users can be root-like or associated to a database,
+# If it is created along a database, it will get full access towards said database,
+#
+# Commands can be either entered at start when asked,
+# Or through a command-line argument when calling the script (`mariahelpher createdb`).
+#
+# It should work with most MariaDB/MySQL servers as long as they use PAM_unix (or similar) for authentification
 
 if [ "$EUID" -ne 0 ]; then
     echo "Please, execute as root."
@@ -7,12 +16,15 @@ fi
 
 if [ "$1" = "" ]; then
     # in case of no argument
+
+    echo "MariaHelper 2.0 - github:jusdepatate/shell-tools"
+    echo ""
     echo "createuser - Create a user with(out) a db"
     echo "createroot - Create a root-like user"
     echo "deleteuser - Delete user"
-    echo "listuser - List all users"
     echo "createdb - Create a db"
     echo "deletedb - Delete a db"
+    echo "listuser - List all users"
     echo "listdb - List all db"
     echo ""
 
@@ -25,12 +37,13 @@ else
 fi
 
 if [ "$whattodo" = "createuser" ]; then
+    # create user
     printf "What is the name of the user ? " && read username
     printf "What is the password of the user ? " && read password
     printf "Do you want a db with the user ? (y/n) " && read yndb
 
     if [ "$yndb" = "y" ]; then
-         # create user with db
+        # create user with db
         echo "CREATE USER $username@'localhost' IDENTIFIED BY '$password';" \
               "CREATE DATABASE IF NOT EXISTS $username;" \
               "GRANT ALL PRIVILEGES ON $username.* TO $username@'localhost';" \
@@ -41,6 +54,7 @@ if [ "$whattodo" = "createuser" ]; then
         echo "CREATE USER $username@'localhost' IDENTIFIED BY '$password';" \
               "FLUSH PRIVILEGES;" | mysql
     fi
+
 elif [ "$whattodo" = "createroot" ]; then
     # create a root-like user
     printf "What is the name of the root-like user ? " && read username
@@ -55,10 +69,6 @@ elif [ "$whattodo" = "deleteuser" ]; then
     echo "REVOKE ALL PRIVILEGES, GRANT OPTION FROM $username@'localhost';" \
           "DROP USER IF EXISTS $username@'localhost';" | mysql
 
-elif [ "$whattodo" = "listuser" ]; then
-    # list existing users
-    echo "SELECT User FROM mysql.user;" | mysql
-
 elif [ "$whattodo" = "createdb" ]; then
     # create databse
     printf "What is the name of the db ? " && read db
@@ -69,6 +79,10 @@ elif [ "$whattodo" = "deletedb" ]; then
     printf "What is the name of the db to be deleted ? " && read db
     echo "DROP DATABASE $db;" | mysql
 
+elif [ "$whattodo" = "listuser" ]; then
+    # list users
+    echo "SELECT User FROM mysql.user;" | mysql
+
 elif [ "$whattodo" = "listdb" ]; then
     # list databases
     echo "SHOW DATABASES;" | mysql
@@ -76,4 +90,5 @@ elif [ "$whattodo" = "listdb" ]; then
 else
     echo "No command recognized."
     exit 1
+
 fi
