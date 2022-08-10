@@ -12,23 +12,23 @@ cd ~
 echo "Starting backup..."
 echo "[START] Backup started on $(date -u)" > backup.log
 
-echo "[mkdir] Creating required folders ('$(date -u)')" | tee -a ~/backup.log
+echo "[mkdir] Creating required folders ($(date -u))" | tee -a backup.log
 mkdir backup 2>>backup.log
 mkdir backup/pacman 2>>backup.log
 
-echo "[cp] Backing up /srv ('$(date -u)')" | tee -a backup.log
+echo "[cp] Backing up /srv ($(date -u))" | tee -a backup.log
 cp -R /srv backup/ 2>>backup.log
 
-echo "[cp] Backing up /etc ('$(date -u)')" | tee -a backup.log
+echo "[cp] Backing up /etc ($(date -u))" | tee -a backup.log
 cp -R /etc backup/ 2>>backup.log
 
-echo "[pacman] Backing up software installed thru Pacman ('$(date -u)')" | tee -a backup.log
-pacman -Q 2>>backup.log > backup/apt/installed
+echo "[pacman] Backing up software installed thru Pacman ($(date -u))" | tee -a backup.log
+pacman -Q 2>>backup.log > backup/pacman/installed
 
-echo "[mysqldump] Backing up MySQL databases ('$(date -u)')" | tee -a backup.log
-su backup -c "mysqldump -A -Y -C -f -u root" > backup/mariadb.sql 2>>backup.log
+echo "[mysqldump] Backing up MySQL databases ($(date -u))" | tee -a backup.log
+mysqldump -A -Y -C -f -u root > backup/mariadb.sql 2>>backup.log
 
-echo "[tar] Compressing backup ('$(date -u)')" | tee -a backup.log
+echo "[tar] Compressing backup ($(date -u))" | tee -a backup.log
 tar -cvpJf backup.tar.xz backup 2>>backup.log
 rm -r ~/backup &>>backup.log
 
@@ -36,7 +36,7 @@ echo "[info] Backup log in file ~/backup.log"
 echo "[info] Backup is in file backup.tar.xz"
 echo "Ending Backup..."
 
-echo "[END] Backup ended on $(date -u)" >> ~/backup.log
+echo "[END] Backup ended on $(date -u)" >> backup.log
 
 cd - &>/etc/null
 exit 0
